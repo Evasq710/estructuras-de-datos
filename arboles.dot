@@ -1,0 +1,14 @@
+digraph arbol {
+graph[label="Arbol binario"] node[style="filled", fillcolor="palegreen"]
+n30[label="30"];
+n20[label="20"];
+n10[label="10"];
+n5[label="5"];
+n40[label="40"];
+
+n30 -> n20;
+n30 -> n40;
+n20 -> n10;
+n10 -> n5;
+
+}
