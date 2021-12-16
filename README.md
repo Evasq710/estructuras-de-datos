@@ -1,1 +1,3 @@
-# estructuras-de-datos
+# Estructuras de Datos
+
+Código comentado de las estructuras de datos básicas.

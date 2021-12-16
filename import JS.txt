@@ -1,0 +1,11 @@
+//**************************************************************//
+1) module.exports = listaDoble; //Exportando
+const listaDoble = require('./listaDoble.js'); //importando
+
+2) HABIILITA export a las clases/import en el archivo a ejecutar:
+node --experimental-modules archivoAEjecutar
+Los archivos deben ser de extensión .mjs
+
+export class listaDoble... //Exportando
+import {listaDoble} from './listaDoble.mjs'; //importando
+//**************************************************************//
