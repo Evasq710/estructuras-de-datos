@@ -43,6 +43,63 @@ class Abb{
         }
     }
 
+    eliminar(valor){
+        if(this.raiz != null){
+            this.raiz = this.eliminarNodo(this.raiz, valor);
+        }else{
+            console.log(`El árbol está vacío, por lo que ${valor} no se encuentra guardado aún.`)
+        }
+    }
+
+    eliminarNodo(raizActual, valor){
+        if(raizActual != null){
+            if(valor < raizActual.dato){
+                raizActual.izquierdo = this.eliminarNodo(raizActual.izquierdo, valor);
+                return raizActual;
+            }else if(valor > raizActual.dato){
+                raizActual.derecho = this.eliminarNodo(raizActual.derecho, valor);
+                return raizActual;
+            }else if(valor == raizActual.dato){
+                if(raizActual.izquierdo == null && raizActual.derecho == null){
+                    //El nodo es hoja, no tiene hijos
+                    raizActual = null;
+                    return raizActual;
+                }
+                if(raizActual.izquierdo == null){
+                    //Tiene hijo derecho
+                    raizActual = raizActual.derecho;
+                    return raizActual;
+                }
+                if(raizActual.derecho == null){
+                    //Tiene hijo izquierdo
+                    raizActual = raizActual.izquierdo;
+                    return raizActual;
+                }
+                //Tiene hijo izquierdo y derecho
+                //Buscamos la menor clave de los mayores (derecho)
+                let menorNodo = this.obtenerMenorNodo(raizActual.derecho);
+                //Sustituyendo el dato menor en el nodo a eliminar
+                console.log(`Menor de los mayores: ${menorNodo.dato}, eliminando ${valor}`)
+                raizActual.dato = menorNodo.dato;
+                //Eliminando el menor de los mayores, que pasó a ser la raizActual
+                raizActual.derecho = this.eliminarNodo(raizActual.derecho, menorNodo.dato)
+                return raizActual;
+            }
+        }else{
+            console.log(`El dato ${valor} no existe en el árbol.`)
+            return null;
+        }
+    }
+
+    obtenerMenorNodo(raizActual){
+        if(raizActual.izquierdo == null){
+            //La raíz actual es el menor
+            return raizActual;
+        }
+        //Si no, moverse por los subárboles a la izquierda
+        return this.obtenerMenorNodo(raizActual.izquierdo);
+    }
+
     recorridoPreorden(raiz_actual){
         if(raiz_actual != null){
             console.log(raiz_actual.dato);
@@ -113,11 +170,23 @@ arbol.insertar(15);
 arbol.insertar(14);
 arbol.insertar(25);
 arbol.insertar(17);
-console.log("***RECORRIDO PREORDEN****");
-arbol.recorridoPreorden(arbol.raiz);
-console.log("***RECORRIDO InOrden****");
-arbol.recorridoInorder(arbol.raiz);
-console.log("***RECORRIDO PostOrden****");
-arbol.recorridoPostorder(arbol.raiz);
+// console.log("***RECORRIDO PREORDEN****");
+// arbol.recorridoPreorden(arbol.raiz);
+// console.log("***RECORRIDO InOrden****");
+// arbol.recorridoInorder(arbol.raiz);
+// console.log("***RECORRIDO PostOrden****");
+// arbol.recorridoPostorder(arbol.raiz);
+
+//Eliminando hojas
+// arbol.eliminar(3);
+// arbol.eliminar(17);
+//Eliminando nodos con hijos izquierdo, o derecho
+// arbol.eliminar(7);
+// arbol.eliminar(25);
+//Eliminando nodos con hijos izquierdo y derecho
+// arbol.eliminar(5);
+// arbol.eliminar(15);
+//Eliminando nodo inexistente
+arbol.eliminar(6);
 
 arbol.generarDot();
