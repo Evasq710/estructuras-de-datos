@@ -70,7 +70,6 @@ class Avl{
             //AQUI ERA EL ERROR, NO SE LE HABÍA SUMADO 1 A LA RAIZ ACTUAL
             raiz_actual.altura = this.alturaMaxima(this.getAltura(raiz_actual.izquierdo), this.getAltura(raiz_actual.derecho)) + 1;
 
-
             // Devuelve el this.raiz con el nuevo dato ya insertado
             return raiz_actual;
         } else {
@@ -78,6 +77,106 @@ class Avl{
             raiz_actual = nuevo;
             return raiz_actual;
         }
+    }
+
+    eliminar(valor){
+        if(this.raiz != null){
+            this.raiz = this.eliminarNodo(this.raiz, valor);
+        }else{
+            console.log(`El árbol está vacío, por lo que ${valor} no se encuentra guardado aún.`)
+        }
+    }
+
+    eliminarNodo(raizActual, valor){
+        if(raizActual != null){
+            if(valor < raizActual.dato){
+                raizActual.izquierdo = this.eliminarNodo(raizActual.izquierdo, valor);
+                let factorEquilibrio = this.getAltura(raizActual.derecho) - this.getAltura(raizActual.izquierdo);
+                console.log(`F.E. valor < raiz.dato ---> ${factorEquilibrio}`);
+                if(factorEquilibrio == -2){
+                    let factorEquilibrioIzq = this.getAltura(raizActual.izquierdo.derecho) - this.getAltura(raizActual.izquierdo.izquierdo);
+                    if(factorEquilibrioIzq == -1){
+                        console.log("Caso 1, Rotación Izq-Izq");
+                        raizActual = this.rotacionSimpleIzquierda(raizActual);
+                    }else{
+                        console.log("Caso 4, Rotación Izq-Der");
+                        raizActual = this.rotacionIzquierdaDerecha(raizActual);
+                    }
+                }else if(factorEquilibrio == 2){
+                    let factorEquilibrioDer = this.getAltura(raizActual.derecho.derecho) - this.getAltura(raizActual.derecho.izquierdo);
+                    if(factorEquilibrioDer == 1){
+                        console.log("Caso 2, Rotación Der-Der");
+                        raizActual = this.rotacionSimpleDerecha(raizActual);
+                    }else{
+                        console.log("Caso 3, Rotación Der-Izq");
+                        raizActual = this.rotacionDerechaIzquierda(raizActual);
+                    }
+                }
+                raizActual.altura = this.alturaMaxima(this.getAltura(raizActual.izquierdo), this.getAltura(raizActual.derecho)) + 1;
+                return raizActual;
+            }else if(valor > raizActual.dato){
+                raizActual.derecho = this.eliminarNodo(raizActual.derecho, valor);
+                let factorEquilibrio = this.getAltura(raizActual.derecho) - this.getAltura(raizActual.izquierdo);
+                console.log(`F.E. valor > raiz.dato ---> ${factorEquilibrio}`);
+                if(factorEquilibrio == -2){
+                    let factorEquilibrioIzq = this.getAltura(raizActual.izquierdo.derecho) - this.getAltura(raizActual.izquierdo.izquierdo);
+                    if(factorEquilibrioIzq == -1){
+                        console.log("Caso 1, Rotación Izq-Izq");
+                        raizActual = this.rotacionSimpleIzquierda(raizActual);
+                    }else{
+                        console.log("Caso 4, Rotación Izq-Der");
+                        raizActual = this.rotacionIzquierdaDerecha(raizActual);
+                    }
+                }else if(factorEquilibrio == 2){
+                    let factorEquilibrioDer = this.getAltura(raizActual.derecho.derecho) - this.getAltura(raizActual.derecho.izquierdo);
+                    if(factorEquilibrioDer == 1){
+                        console.log("Caso 2, Rotación Der-Der");
+                        raizActual = this.rotacionSimpleDerecha(raizActual);
+                    }else{
+                        console.log("Caso 3, Rotación Der-Izq");
+                        raizActual = this.rotacionDerechaIzquierda(raizActual);
+                    }
+                }
+                raizActual.altura = this.alturaMaxima(this.getAltura(raizActual.izquierdo), this.getAltura(raizActual.derecho)) + 1;
+                return raizActual;
+            }else if(valor == raizActual.dato){
+                if(raizActual.izquierdo == null && raizActual.derecho == null){
+                    //El nodo es hoja, no tiene hijos
+                    raizActual = null;
+                }
+                else if(raizActual.izquierdo == null){
+                    //Tiene hijo derecho
+                    raizActual = raizActual.derecho;
+                }
+                else if(raizActual.derecho == null){
+                    //Tiene hijo izquierdo
+                    raizActual = raizActual.izquierdo;
+                }
+                else {
+                    //Tiene hijo izquierdo y derecho
+                    //Buscamos la menor clave de los mayores (derecho)
+                    let menorNodo = this.obtenerMenorNodo(raizActual.derecho);
+                    //Sustituyendo el dato menor en el nodo a eliminar
+                    console.log(`Menor de los mayores: ${menorNodo.dato}, eliminando ${valor}`)
+                    raizActual.dato = menorNodo.dato;
+                    //Eliminando el menor de los mayores, que pasó a ser la raizActual
+                    raizActual.derecho = this.eliminarNodo(raizActual.derecho, menorNodo.dato)
+                }
+                return raizActual;
+            }
+        }else{
+            console.log(`El dato ${valor} no existe en el árbol.`)
+            return null;
+        }
+    }
+
+    obtenerMenorNodo(raizActual){
+        if(raizActual.izquierdo == null){
+            //La raíz actual es el menor
+            return raizActual;
+        }
+        //Si no, moverse por los subárboles a la izquierda
+        return this.obtenerMenorNodo(raizActual.izquierdo);
     }
 
     getAltura(nodo){
@@ -149,7 +248,7 @@ class Avl{
 
     recorridoPreorden(raiz_actual){
         if(raiz_actual != null){
-            console.log(raiz_actual.dato);
+            console.log(`${raiz_actual.dato}, con altura ${raiz_actual.altura}`);
             this.recorridoPreorden(raiz_actual.izquierdo);
             this.recorridoPreorden(raiz_actual.derecho);
         }
@@ -208,11 +307,31 @@ class Avl{
 }
 
 let arbol = new Avl()
-//Degenerado si solo fuera binario
-// //Caso 1
-// arbol.insertar(30);
-// arbol.insertar(20);
+// //EJEMPLO 1 ELIMINACION AVL
+// arbol.insertar(8);
+// arbol.insertar(5);
+// arbol.insertar(11);
+// arbol.insertar(2);
+// arbol.insertar(6);
+// arbol.insertar(9);
+// arbol.insertar(15);
+// arbol.insertar(0);
+// arbol.insertar(3);
+// arbol.insertar(7);
 // arbol.insertar(10);
+// arbol.insertar(14);
+// arbol.insertar(18);
+// arbol.insertar(4);
+// arbol.eliminar(15);
+// arbol.eliminar(6);
+// //EJEMPLO 2 ELIMINACION AVL
+arbol.insertar(10);
+arbol.insertar(100);
+arbol.insertar(20);
+arbol.insertar(80);
+arbol.insertar(40);
+arbol.insertar(70);
+arbol.eliminar(40);
 // //Caso 2
 // arbol.insertar(10);
 // arbol.insertar(20);
@@ -225,12 +344,10 @@ let arbol = new Avl()
 // arbol.insertar(30);
 // arbol.insertar(10);
 // arbol.insertar(20);
-
-console.log("***RECORRIDO PREORDEN****");
-arbol.recorridoPreorden(arbol.raiz);
-console.log("***RECORRIDO InOrden****");
-arbol.recorridoInorder(arbol.raiz);
-console.log("***RECORRIDO PostOrden****");
-arbol.recorridoPostorder(arbol.raiz);
-
+// console.log("***RECORRIDO PREORDEN****");
+// arbol.recorridoPreorden(arbol.raiz);
+// console.log("***RECORRIDO InOrden****");
+// arbol.recorridoInorder(arbol.raiz);
+// console.log("***RECORRIDO PostOrden****");
+// arbol.recorridoPostorder(arbol.raiz);
 arbol.generarDot();
